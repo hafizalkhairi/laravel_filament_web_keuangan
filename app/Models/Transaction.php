@@ -13,7 +13,7 @@ class Transaction extends Model
     protected $fillable = [
         'name',
         'category_id',
-        'date',
+        'transaction_date',
         'amount',
         'note',
         'image',
@@ -24,4 +24,17 @@ class Transaction extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function scopeExpense($query)
+    {
+        return $query->whereHas('category', function ($query) {
+            $query->where('is_expense', true);
+        });
+    }
+
+    public function scopeIncome($query)
+    {
+        return $query->whereHas('category', function ($query) {
+            $query->where('is_expense', false);
+        });
+    }
 }
