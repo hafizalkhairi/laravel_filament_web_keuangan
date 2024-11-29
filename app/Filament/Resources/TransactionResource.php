@@ -47,40 +47,48 @@ class TransactionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                Tables\Columns\ImageColumn::make('category.image')
+                    ->label('Kategori'),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->description(fn (Transaction $record): string => $record->name)
+                    ->label('Transaksi')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('category.is_expense')
-                    ->label('Tipe Transaksi')
+                    ->label('Tipe')
+                    ->trueIcon('heroicon-o-arrow-up-circle')
+                    ->falseIcon('heroicon-o-arrow-down-circle')
+                    ->trueColor('danger')
+                    ->falseColor('success')
                     ->boolean()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('category.name')
-                    ->numeric()
-                    ->label('Nama Kategori')
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('date')
+                    ->label('Tanggal')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('amount')
+                    ->label('Jumlah')
                     ->numeric()
+                    ->prefix('Rp ')
+                    // ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))
                     ->sortable(),
-                // Tables\Columns\TextColumn::make('note')
-                //     ->searchable(),
-                Tables\Columns\ImageColumn::make('image'),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->iconButton(),
+                Tables\Actions\ViewAction::make()
+                    ->iconButton()
+                    ->color('info'),
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->requiresConfirmation()
+                    ->modalIcon('heroicon-o-trash')
+                    ->modalHeading('Hapus Transaksi')
+                    ->modalDescription('Yakin Menghapus Data ini?')
+                    ->modalCancelActionLabel('Tidak')
+                    ->modalSubmitActionLabel('Ya, Yakin'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
